@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Contoso 経費精算（体験会デモ）</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23036E72'/%3E%3Cpath d='M10 7h12v18l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4z' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+:root{
+  --navy:#12324A;--navy-2:#1C4766;--teal:#036E72;--teal-d:#02585B;--teal-50:#E8F4F4;--teal-100:#CFE7E7;
+  --ground:#F4F7FA;--card:#FFFFFF;--line:#D6DFE7;--line-2:#E7EDF2;
+  --text:#1D2B36;--muted:#5C6D7A;--subtle:#8A99A6;
+  --err:#C0262D;--err-bg:#FDEEEE;--ok:#1F7A4D;--ok-bg:#E4F4EB;--wait:#8A5A00;--wait-bg:#FFF2D6;
+  --r:10px;
+  --font:"Yu Gothic UI","Meiryo UI","Segoe UI","Noto Sans JP",sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font);font-size:14px;line-height:1.6;color:var(--text);background:var(--ground);min-height:100vh;display:flex;flex-direction:column}
+[hidden]{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.container{width:100%;max-width:1228px;margin:0 auto;padding:0 24px}
+main{flex:1 0 auto}
+a{color:var(--teal)}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:2px solid #3B9EA2;outline-offset:2px}
+[tabindex="-1"]:focus{outline:none}
+.nowrap{white-space:nowrap}
+.mono{font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.mt{margin-top:14px}
+
+/* header */
+.app-header{background:var(--navy);color:#fff}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:56px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-mark{width:30px;height:30px;border-radius:8px;background:var(--teal);display:inline-flex;align-items:center;justify-content:center;flex:none}
+.brand-name{font-size:17px;font-weight:700;letter-spacing:.02em;white-space:nowrap}
+.badge-demo{font-size:11.5px;font-weight:700;line-height:18px;padding:1px 9px;border-radius:999px;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.45);white-space:nowrap}
+.user{display:flex;align-items:center;gap:8px;font-size:13px;white-space:nowrap}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--navy-2);border:1px solid rgba(255,255,255,.28);display:inline-flex;align-items:center;justify-content:center;flex:none}
+
+/* page head */
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:12px 0 10px}
+.breadcrumb{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;line-height:16px;color:var(--muted);margin-bottom:2px}
+.breadcrumb a{text-decoration:none}
+.breadcrumb a:hover{text-decoration:underline}
+.page-head h1{font-size:20px;line-height:28px;font-weight:700;color:var(--navy)}
+.page-lead{margin-top:2px;font-size:13px;color:var(--muted)}
+
+/* buttons */
+.btn{font-family:inherit;font-size:13.5px;font-weight:700;line-height:1;height:36px;padding:0 16px;border-radius:6px;border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;text-decoration:none}
+.btn-primary{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn-primary:hover{background:var(--teal-d);border-color:var(--teal-d)}
+.btn-secondary{background:#fff;border-color:var(--teal);color:var(--teal)}
+.btn-secondary:hover{background:var(--teal-50)}
+.btn-quiet{background:#fff;border-color:var(--line);color:var(--muted)}
+.btn-quiet:hover{border-color:#B7C5D0;color:var(--text)}
+.btn-danger{background:var(--err);border-color:var(--err);color:#fff}
+.btn-danger:hover{background:#A31F25;border-color:#A31F25}
+.btn-lg{height:42px;padding:0 22px;font-size:14.5px}
+.btn-sm{height:30px;padding:0 12px;font-size:12.5px}
+.btn-block{width:100%}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 1px 2px rgba(18,50,74,.05)}
+.card-title,.section-title{display:flex;align-items:center;gap:8px;font-size:14px;line-height:20px;font-weight:700;color:var(--navy)}
+.card-title::before,.section-title::before{content:"";width:4px;height:14px;border-radius:2px;background:var(--teal);flex:none}
+.card-title{margin-bottom:8px}
+.count-pill{font-size:11.5px;line-height:18px;font-weight:700;color:var(--teal);background:var(--teal-50);border-radius:999px;padding:0 8px}
+
+/* layout */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 272px;gap:20px;align-items:start;padding-bottom:32px}
+.main-col{min-width:0}
+.side-col{display:flex;flex-direction:column;gap:14px}
+@media (min-width:981px) and (min-height:720px){.side-col{position:sticky;top:12px}}
+
+/* form */
+.form-card{padding:12px 16px 14px}
+.info-grid{display:grid;grid-template-columns:150px minmax(0,1fr) minmax(0,1.25fr);grid-template-areas:"title title purpose" "date dest purpose";gap:8px 12px}
+.f-title{grid-area:title}.f-tripdate{grid-area:date}.f-dest{grid-area:dest}
+.f-purpose{grid-area:purpose;display:flex;flex-direction:column}
+.f-purpose textarea{flex:1 1 auto;min-height:72px}
+.field{min-width:0}
+.field label,.field .label{display:flex;align-items:center;gap:6px;font-size:12px;line-height:16px;font-weight:600;color:#3A4A57;margin-bottom:3px;white-space:nowrap}
+.req{font-size:10.5px;line-height:15px;font-weight:700;color:var(--err);background:var(--err-bg);border-radius:4px;padding:0 5px}
+input[type=text],input[type=number],select,textarea{display:block;width:100%;margin:0;font-family:inherit;font-size:14px;color:var(--text);background-color:#fff;border:1px solid #B8C6D1;border-radius:6px;height:32px;padding:0 10px;line-height:30px}
+textarea{height:auto;padding:5px 10px;line-height:20px;resize:vertical}
+select{-webkit-appearance:none;appearance:none;padding-right:28px;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%235C6D7A' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;background-size:12px 8px}
+input::placeholder,textarea::placeholder{color:#9AA8B4}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(3,110,114,.18)}
+.is-invalid{border-color:var(--err)!important;background-color:#FFF9F9!important}
+.field-error{margin-top:3px;font-size:12px;line-height:16px;font-weight:600;color:var(--err)}
+.field-error:empty{display:none}
+.f-amount input{text-align:right;font-variant-numeric:tabular-nums}
+
+.error-summary{margin-bottom:12px;padding:10px 14px;border:1px solid #EFB7BA;border-left:4px solid var(--err);border-radius:8px;background:var(--err-bg)}
+.es-title{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--err)}
+.es-list{margin:4px 0 0;padding:0 0 0 26px;color:var(--err)}
+.es-list li{margin:2px 0}
+.es-link{font-family:inherit;font-size:13px;color:var(--err);background:none;border:0;padding:0;text-align:left;text-decoration:underline;cursor:pointer}
+
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 8px}
+.items{display:flex;flex-direction:column;gap:10px}
+.item-card{display:grid;grid-template-columns:52px minmax(0,1fr);background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:0 1px 2px rgba(18,50,74,.05)}
+.item-gutter{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0;background:#F7FAFB;border-right:1px solid var(--line-2);border-radius:var(--r) 0 0 var(--r)}
+.item-no{width:26px;height:26px;border-radius:50%;background:var(--teal);color:#fff;font-size:13px;line-height:26px;font-weight:700;text-align:center}
+.btn-del{font-family:inherit;font-size:11.5px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:5px;height:26px;padding:0 7px;cursor:pointer}
+.btn-del:hover{color:var(--err);border-color:#E6AEB1}
+.item-body{min-width:0;padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px}
+.row-a{display:grid;grid-template-columns:112px minmax(0,1.6fr) minmax(0,1fr) 136px;gap:10px}
+.row-b{display:grid;grid-template-columns:minmax(0,230px) minmax(0,190px) minmax(0,1fr);gap:10px}
+.row-c{display:grid;grid-template-columns:minmax(0,1fr) 84px 150px;gap:10px;align-items:start;padding:8px 10px;background:#F3F9F9;border:1px solid var(--teal-100);border-radius:8px}
+.perperson output{display:block;height:32px;line-height:30px;padding:0 10px;border:1px dashed var(--teal);border-radius:6px;background:#fff;color:var(--teal);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.total-card{padding:16px}
+.total-label{font-size:12.5px;font-weight:700;color:var(--muted)}
+.total-amount{margin-top:2px;font-size:30px;line-height:38px;font-weight:700;color:var(--teal);font-variant-numeric:tabular-nums}
+.total-meta{margin:2px 0 12px;font-size:12px;color:var(--muted)}
+.confirm-note{margin:0 0 12px;padding:8px 10px;border-radius:6px;background:var(--teal-50);color:#174A4C;font-size:12.5px;line-height:1.6}
+.actions-col{display:flex;flex-direction:column;gap:8px}
+
+.policy-card{padding:14px 16px}
+.policy-title{display:flex;align-items:center;gap:8px;font-size:14px;line-height:20px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.policy-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.policy-list li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:4px;font-size:12.5px;line-height:19px;color:#2C3B47}
+.pno{color:var(--teal);font-weight:700}
+.policy-note{margin-top:10px;padding-top:8px;border-top:1px solid var(--line-2);font-size:11.5px;color:var(--subtle)}
+
+/* tables */
+.table-card{overflow:hidden}
+.table-card-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0}
+.table-scroll{overflow-x:auto}
+table.data{width:100%;border-collapse:collapse}
+.data th{font-size:12px;font-weight:700;color:var(--muted);text-align:left;background:#F7FAFC;padding:9px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.data td{padding:11px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.data tbody tr:last-child td{border-bottom:0}
+.data tr.has-sub td{border-bottom:0;padding-bottom:4px}
+.data tr.sub-row td{padding-top:0}
+.data .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.data .c-no{width:46px;color:var(--muted);font-variant-numeric:tabular-nums}
+.data tbody tr.row-link{cursor:pointer}
+.data tbody tr.row-link:hover td{background:#F5FAFA}
+.data a{font-weight:700;text-decoration:none}
+.data a:hover{text-decoration:underline}
+.data tfoot td{font-weight:700;background:#F7FAFC;border-top:1px solid var(--line);border-bottom:0}
+.sub{display:block;margin-top:2px;font-size:12px;color:var(--muted)}
+.dining-info{display:inline-block;font-size:12px;color:#174A4C;background:var(--teal-50);border-radius:6px;padding:3px 8px}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12px;line-height:20px;font-weight:700;border-radius:999px;padding:0 10px;white-space:nowrap}
+.status::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.status-ok{background:var(--ok-bg);color:var(--ok)}
+.status-wait{background:var(--wait-bg);color:var(--wait)}
+.status-other{background:#EEF2F5;color:var(--muted)}
+
+.notice{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;padding:10px 14px;border:1px solid var(--teal-100);border-radius:8px;background:var(--teal-50);color:#174A4C;font-size:13px}
+.notice svg,.es-title svg{flex:none;margin-top:1px}
+
+.dl-grid{display:grid;grid-template-columns:110px minmax(0,1fr);margin:0;border-top:1px solid var(--line-2)}
+.dl-grid dt,.dl-grid dd{margin:0;padding:8px 0;border-bottom:1px solid var(--line-2)}
+.dl-grid dt{font-size:12.5px;font-weight:700;color:var(--muted)}
+.dl-grid dd{white-space:pre-wrap;word-break:break-word}
+
+.done-wrap{display:flex;justify-content:center;padding:20px 0 36px}
+.done-card{width:100%;max-width:900px;padding:28px 32px}
+.done-head{text-align:center}
+.done-icon{display:flex;justify-content:center;margin-bottom:10px}
+.done-head h1{font-size:24px;line-height:32px;font-weight:700;color:var(--navy)}
+.done-lead{margin-top:4px;font-size:13px;color:var(--muted)}
+.summary-grid{display:grid;grid-template-columns:170px minmax(0,1fr) 150px 150px;margin:20px 0 18px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.summary-grid>div{padding:10px 14px;border-right:1px solid var(--line-2);background:#FAFCFD;min-width:0}
+.summary-grid>div:last-child{border-right:0}
+.summary-grid dt{font-size:11.5px;font-weight:700;color:var(--muted)}
+.summary-grid dd{margin:2px 0 0;font-size:15px;font-weight:700}
+.table-frame{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.done-actions{display:flex;justify-content:center;margin-top:20px}
+.detail-actions{display:flex;justify-content:flex-start;margin-top:16px}
+
+/* footer */
+.app-footer{background:#fff;border-top:1px solid var(--line)}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:14px;padding-bottom:14px}
+.footer-text{font-size:12px;line-height:1.7;color:var(--muted)}
+.reset-panel{margin-bottom:16px;padding:14px 16px;border:1px solid #EFB7BA;border-radius:8px;background:#FFF7F7}
+.reset-panel h2{font-size:14px;color:var(--err);margin-bottom:4px}
+.reset-panel p{margin-bottom:10px;font-size:13px}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px}
+
+/* toast */
+.toast-region{position:fixed;right:20px;bottom:20px;z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:8px;pointer-events:none}
+.toast{max-width:380px;padding:10px 16px;border-radius:8px;background:var(--navy);color:#fff;font-size:13.5px;box-shadow:0 6px 18px rgba(18,50,74,.25);transition:opacity .3s}
+.toast.is-hiding{opacity:0}
+
+@media (max-width:980px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:760px){
+  .info-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"title" "date" "dest" "purpose"}
+  .row-a,.row-b,.row-c{grid-template-columns:minmax(0,1fr)}
+  .summary-grid{grid-template-columns:minmax(0,1fr)}
+  .summary-grid>div{border-right:0;border-bottom:1px solid var(--line-2)}
+  .footer-inner,.page-head{flex-direction:column;align-items:flex-start}
+  .user-name{display:none}
+}
+</style>
+</head>
+<body>
+<header class="app-header">
+  <div class="container header-inner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M6 3h12v18l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></span>
+      <span class="brand-name">Contoso 経費精算</span>
+      <span class="badge-demo">体験会デモ</span>
+    </div>
+    <div class="user">
+      <span class="avatar" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="#fff" focusable="false"><circle cx="12" cy="8.5" r="4"/><path d="M4 20.5c0-4.3 3.6-6.6 8-6.6s8 2.3 8 6.6z"/></svg></span>
+      <span class="user-name">生成AI推進室　デモ ユーザー</span>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <noscript><p class="notice">このデモを利用するには JavaScript を有効にしてください。</p></noscript>
+  <div id="view"></div>
+</main>
+
+<footer class="app-footer">
+  <div class="container footer-inner">
+    <p class="footer-text">このサイトは Copilot Cowork 体験会用の架空のデモです。実在の会社・人物・システムとは関係ありません。入力内容はこのブラウザーの中にだけ保存されます。</p>
+    <button type="button" class="btn btn-quiet btn-sm" id="btn-reset" name="btn-reset" aria-controls="reset-panel" aria-expanded="false">デモをリセット</button>
+  </div>
+  <div class="container">
+    <section id="reset-panel" class="reset-panel" aria-labelledby="reset-panel-title" hidden>
+      <h2 id="reset-panel-title" tabindex="-1">デモをリセットしますか？</h2>
+      <p>入力中の内容と申請履歴を初期状態に戻します。</p>
+      <div class="btn-row">
+        <button type="button" class="btn btn-danger" id="btn-reset-confirm" name="btn-reset-confirm">リセットする</button>
+        <button type="button" class="btn btn-secondary" id="btn-reset-cancel" name="btn-reset-cancel">キャンセル</button>
+      </div>
+    </section>
+  </div>
+</footer>
+
+<div id="toast-region" class="toast-region" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'contosoExpenseDemo.v1';
+  var LIMIT = 10000;
+  var CATEGORIES = [
+    { value: '', label: '選択してください' },
+    { value: 'rail', label: '旅費交通費（新幹線・特急）' },
+    { value: 'taxi', label: '旅費交通費（タクシー・バス）' },
+    { value: 'hotel', label: '宿泊費' },
+    { value: 'meeting', label: '会議費（社外との飲食・1人10,000円以下）' },
+    { value: 'entertainment', label: '交際費（社外との飲食・1人10,000円超）' },
+    { value: 'supplies', label: '消耗品費・書籍' }
+  ];
+  var PAYMENTS = [
+    { value: 'advance', label: '立替（現金・個人カード）' },
+    { value: 'corporate', label: '法人カード' }
+  ];
+  var DINING = { meeting: true, entertainment: true };
+  var TOP_FIELDS = { 'title': 'title', 'trip-date': 'tripDate', 'destination': 'destination', 'purpose': 'purpose' };
+  var ITEM_KEYS = ['date', 'category', 'payee', 'amount', 'payment', 'invoice', 'note', 'attendees', 'headcount'];
+
+  var ICON_ALERT = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="#C0262D"/><path d="M12 7v6.5M12 16.6v.4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>';
+  var ICON_INFO = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="#036E72"/><path d="M12 10.5v6M12 7.4v.4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>';
+  var ICON_CHECK = '<svg viewBox="0 0 80 80" width="76" height="76" aria-hidden="true" focusable="false"><circle cx="40" cy="40" r="40" fill="#E3F1F1"/><circle cx="40" cy="40" r="29" fill="#036E72"/><path d="M27.5 41l8.5 8.5L53 32" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_POLICY = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="#036E72" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h6M10 17h4"/></svg>';
+
+  var view = document.getElementById('view');
+  var state = { data: null, showErrors: false, lastPath: null, summaryKey: '' };
+  var memoryStore = null;
+
+  /* ---------- helpers ---------- */
+  function str(s) { return s == null ? '' : String(s); }
+  function esc(s) {
+    return str(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function nfkc(s) { s = str(s); return s.normalize ? s.normalize('NFKC') : s; }
+  function isBlank(s) { return !str(s).replace(/[\s\u3000]+/g, ''); }
+  function clean(s) { return str(s).replace(/^[\s\u3000]+|[\s\u3000]+$/g, ''); }
+  function pad(n, w) { n = String(n); while (n.length < w) { n = '0' + n; } return n; }
+  function comma(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function yen(n) { return '¥' + comma(n); }
+  function todayStr() { var d = new Date(); return d.getFullYear() + '/' + pad(d.getMonth() + 1, 2) + '/' + pad(d.getDate(), 2); }
+  function timeStr() { var d = new Date(); return pad(d.getHours(), 2) + ':' + pad(d.getMinutes(), 2); }
+  function byId(id) { return document.getElementById(id); }
+  function each(list, fn) { Array.prototype.forEach.call(list, fn); }
+  function focusEl(el) { if (!el) { return; } try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); } }
+  function labelOf(list, v) {
+    for (var i = 0; i < list.length; i++) { if (v !== '' && list[i].value === v) { return list[i].label; } }
+    return v ? String(v) : '―';
+  }
+  function categoryLabel(v) { return labelOf(CATEGORIES, v); }
+  function paymentLabel(v) { return labelOf(PAYMENTS, v || 'advance'); }
+  function isCategory(v) {
+    if (!v) { return false; }
+    for (var i = 0; i < CATEGORIES.length; i++) { if (CATEGORIES[i].value === v) { return true; } }
+    return false;
+  }
+
+  /* 29,440 / 29440 / ¥29,440 / ２９，４４０円 → 29440 */
+  function parseAmount(s) {
+    var t = nfkc(s).replace(/[\s,]/g, '').replace(/^(JPY|YEN)/i, '').replace(/[¥\\]/g, '')
+      .replace(/\(?税込\)?/g, '').replace(/円/g, '').replace(/[\-\u2010-\u2015\u2212\u30FC]+$/, '');
+    if (!/^\d+$/.test(t)) { return null; }
+    var n = parseInt(t, 10);
+    if (!(n > 0) || n > 99999999) { return null; }
+    return n;
+  }
+  function normalizeDate(s) {
+    var t = nfkc(s).replace(/\s+/g, '').replace(/\([^)]*\)$/, '');
+    var m = /^(\d{4})[\/\-.年](\d{1,2})[\/\-.月](\d{1,2})日?$/.exec(t) || /^(\d{4})(\d{2})(\d{2})$/.exec(t);
+    if (!m) { return null; }
+    var y = +m[1], mo = +m[2], d = +m[3];
+    if (y < 2000 || y > 2099) { return null; }
+    var dt = new Date(y, mo - 1, d);
+    if (dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) { return null; }
+    return y + '/' + pad(mo, 2) + '/' + pad(d, 2);
+  }
+  function normalizeInvoice(s) {
+    var t = nfkc(s).replace(/[\s\-\u2010-\u2015\u2212\u30FC]/g, '').toUpperCase();
+    return /^T\d{13}$/.test(t) ? t : null;
+  }
+  function parseHeadcount(s) {
+    var t = nfkc(s).replace(/\s+/g, '').replace(/(名|人)$/, '');
+    if (!/^\d{1,3}$/.test(t)) { return null; }
+    var n = parseInt(t, 10);
+    return n >= 1 ? n : null;
+  }
+  function perPersonValue(it) {
+    var a = parseAmount(it.amount), h = parseHeadcount(it.headcount);
+    return (a === null || h === null) ? null : a / h;
+  }
+  function perPersonText(it) {
+    var v = perPersonValue(it);
+    return v === null ? '―' : yen(Math.floor(v));
+  }
+
+  /* ---------- storage ---------- */
+  function readStore() { try { return window.localStorage.getItem(STORAGE_KEY); } catch (e) { return memoryStore; } }
+  function writeStore(v) { try { window.localStorage.setItem(STORAGE_KEY, v); } catch (e) { memoryStore = v; } }
+  function persist() { writeStore(JSON.stringify(state.data)); }
+
+  function seedApplications() {
+    return [
+      {
+        id: 'EXP-2026-1006', title: '名古屋支店 打合せ（交通費）', tripDate: '2026/10/02', destination: '名古屋支店',
+        purpose: '生成AI活用の推進に関する名古屋支店との打合せ', appliedAt: '2026/10/06', status: '承認済み', total: 21800, createdAt: 2,
+        items: [{ date: '2026/10/02', category: 'rail', payee: 'マージーズ・トラベル株式会社', amount: 21800, payment: 'advance', invoice: 'T2594203330820', note: '東海道新幹線 東京⇔名古屋 往復', attendees: '', headcount: '' }]
+      },
+      {
+        id: 'EXP-2026-0915', title: '東京本社 Copilot 研修（参加費）', tripDate: '2026/09/10', destination: '東京本社',
+        purpose: 'Copilot 活用研修への参加', appliedAt: '2026/09/15', status: '承認済み', total: 33000, createdAt: 1,
+        items: [{ date: '2026/09/10', category: '研修費（参加費）', payee: 'Contoso ラーニング株式会社', amount: 33000, payment: 'advance', invoice: '', note: 'Copilot 活用研修 参加費', attendees: '', headcount: '' }]
+      }
+    ];
+  }
+  function freshData() { return { draft: null, applications: seedApplications() }; }
+  function emptyItem() { return { date: '', category: '', payee: '', amount: '', payment: 'advance', invoice: '', note: '', attendees: '', headcount: '' }; }
+  function newDraft() { return { title: '', tripDate: '', destination: '', purpose: '', items: [emptyItem()], savedAt: '' }; }
+  function sanitizeDraft(d) {
+    if (!d || typeof d !== 'object' || !Array.isArray(d.items)) { return null; }
+    var out = newDraft();
+    Object.keys(TOP_FIELDS).forEach(function (id) { out[TOP_FIELDS[id]] = str(d[TOP_FIELDS[id]]); });
+    out.savedAt = str(d.savedAt);
+    out.items = d.items.map(function (it) {
+      var e = emptyItem();
+      ITEM_KEYS.forEach(function (k) { if (it && it[k] != null) { e[k] = String(it[k]); } });
+      if (!e.payment) { e.payment = 'advance'; }
+      return e;
+    });
+    if (!out.items.length) { out.items.push(emptyItem()); }
+    return out;
+  }
+  function loadData() {
+    var raw = readStore(), data = null;
+    if (raw) { try { data = JSON.parse(raw); } catch (e) { data = null; } }
+    if (!data || typeof data !== 'object' || !Array.isArray(data.applications)) {
+      state.data = freshData();
+      persist();
+      return;
+    }
+    state.data = { draft: sanitizeDraft(data.draft), applications: data.applications.filter(function (a) { return a && a.id; }) };
+  }
+  function resetDemo() {
+    view.innerHTML = '';
+    state.data = freshData();
+    state.showErrors = false;
+    state.summaryKey = '';
+    persist();
+  }
+  function ensureDraft() {
+    if (!state.data.draft) { state.data.draft = newDraft(); }
+    if (!state.data.draft.items.length) { state.data.draft.items.push(emptyItem()); }
+    return state.data.draft;
+  }
+  function draftHasContent(d) {
+    if (!d) { return false; }
+    if (!isBlank(d.title) || !isBlank(d.tripDate) || !isBlank(d.destination) || !isBlank(d.purpose)) { return true; }
+    return d.items.some(function (it) {
+      return ITEM_KEYS.some(function (k) { return k !== 'payment' && !isBlank(it[k]); }) || (it.payment && it.payment !== 'advance');
+    });
+  }
+  function findApp(id) {
+    var list = state.data.applications;
+    for (var i = 0; i < list.length; i++) { if (list[i].id === id) { return list[i]; } }
+    return null;
+  }
+
+  /* ---------- validation ---------- */
+  function validateDraft(d) {
+    var errs = [];
+    function add(id, where, message) { errs.push({ id: id, where: where, message: message }); }
+    if (isBlank(d.title)) { add('title', '件名', '件名を入力してください'); }
+    if (isBlank(d.tripDate)) { add('trip-date', '出張日', '出張日を入力してください（YYYY/MM/DD）'); }
+    else if (!normalizeDate(d.tripDate)) { add('trip-date', '出張日', '出張日は YYYY/MM/DD の形式で、正しい日付を入力してください'); }
+    if (isBlank(d.purpose)) { add('purpose', '目的', '目的を入力してください'); }
+    d.items.forEach(function (it, i) {
+      var n = i + 1, p = 'item-' + n + '-', w = '明細' + n + '・';
+      var amt = parseAmount(it.amount);
+      var dining = !!DINING[it.category];
+      var hc = parseHeadcount(it.headcount);
+      if (isBlank(it.date)) { add(p + 'date', w + '利用日', '利用日を入力してください（YYYY/MM/DD）'); }
+      else if (!normalizeDate(it.date)) { add(p + 'date', w + '利用日', '利用日は YYYY/MM/DD の形式で、正しい日付を入力してください'); }
+      if (!isCategory(it.category)) { add(p + 'category', w + '経費区分', '経費区分を選択してください'); }
+      else if (dining && amt !== null && hc !== null) {
+        var per = amt / hc;
+        if (it.category === 'meeting' && per > LIMIT) { add(p + 'category', w + '経費区分', '1人あたり10,000円を超えるため「交際費」を選んでください'); }
+        if (it.category === 'entertainment' && per <= LIMIT) { add(p + 'category', w + '経費区分', '1人あたり10,000円以下のため「会議費」を選んでください'); }
+      }
+      if (isBlank(it.payee)) { add(p + 'payee', w + '支払先', '支払先を入力してください'); }
+      if (isBlank(it.amount)) { add(p + 'amount', w + '金額', '金額を入力してください'); }
+      else if (amt === null) { add(p + 'amount', w + '金額', '金額は1円以上の整数で入力してください（例：12,345）'); }
+      if (!isBlank(it.invoice) && !normalizeInvoice(it.invoice)) { add(p + 'invoice', w + '登録番号', '登録番号は「T」に続けて13桁の数字で入力してください'); }
+      if (dining) {
+        if (isBlank(it.attendees)) { add(p + 'attendees', w + '参加者', '参加者（会社名・氏名）を入力してください'); }
+        if (isBlank(it.headcount)) { add(p + 'headcount', w + '人数', '人数を入力してください'); }
+        else if (hc === null) { add(p + 'headcount', w + '人数', '人数は1以上の整数で入力してください'); }
+      }
+    });
+    return errs;
+  }
+
+  /* ---------- routing ---------- */
+  function currentPath() { var h = location.hash || ''; return h.charAt(0) === '#' ? h.slice(1) : h; }
+  function parseRoute(path) {
+    if (path === '/list') { return { name: 'list' }; }
+    if (path === '/new') { return { name: 'new' }; }
+    if (path === '/confirm') { return { name: 'confirm' }; }
+    if (path === '/reset') { return { name: 'reset' }; }
+    var m = /^\/(done|detail)\/([^\/?#]+)$/.exec(path);
+    if (m) {
+      var id = m[2];
+      try { id = decodeURIComponent(id); } catch (e) { /* keep raw */ }
+      return { name: m[1], id: id };
+    }
+    return { name: 'unknown' };
+  }
+  function setPath(path) { history.replaceState(null, '', '#' + path); }
+  function go(path) {
+    if (currentPath() === path) { render(); } else { location.hash = path; }
+  }
+
+  function render() {
+    captureForm();
+    var path = currentPath();
+    var r = parseRoute(path);
+    if (r.name === 'reset') {
+      resetDemo();
+      closeResetPanel(false);
+      toast('デモを初期状態に戻しました');
+    }
+    if (r.name === 'reset' || r.name === 'unknown') {
+      path = '/list';
+      setPath(path);
+      r = { name: 'list' };
+    }
+    if (r.name === 'confirm') {
+      var hasContent = draftHasContent(state.data.draft);
+      if (!hasContent || validateDraft(ensureDraft()).length) {
+        state.showErrors = hasContent;
+        state.summaryKey = '';
+        path = '/new';
+        setPath(path);
+        r = { name: 'new' };
+        toast(hasContent ? '入力内容を確認してください' : '申請内容を入力してください');
+      }
+    }
+    var html;
+    if (r.name === 'new') { html = viewNew(); }
+    else if (r.name === 'confirm') { html = viewConfirm(); }
+    else if (r.name === 'done') { html = viewDone(r.id); }
+    else if (r.name === 'detail') { html = viewDetail(r.id); }
+    else { html = viewList(); }
+    view.innerHTML = html;
+    if (r.name === 'new') { afterFormRender(); }
+    if (path !== state.lastPath) {
+      window.scrollTo(0, 0);
+      var box = byId('error-summary');
+      focusEl(box && !box.hidden ? box : byId('page-title'));
+    }
+    state.lastPath = path;
+  }
+
+  /* ---------- shared view parts ---------- */
+  function pageHead(title, crumbs, actionsHtml, lead) {
+    var bc = '';
+    if (crumbs && crumbs.length) {
+      bc = '<nav class="breadcrumb" aria-label="パンくずリスト">' + crumbs.map(function (c, i) {
+        return (i ? '<span aria-hidden="true">›</span>' : '') +
+          (c.href ? '<a href="' + c.href + '">' + esc(c.label) + '</a>' : '<span aria-current="page">' + esc(c.label) + '</span>');
+      }).join('') + '</nav>';
+    }
+    return '<div class="page-head"><div>' + bc +
+      '<h1 id="page-title" tabindex="-1">' + esc(title) + '</h1>' +
+      (lead ? '<p class="page-lead">' + esc(lead) + '</p>' : '') +
+      '</div>' + (actionsHtml || '') + '</div>';
+  }
+  function statusBadge(s) {
+    var cls = s === '承認済み' ? 'status-ok' : (s === '上長承認待ち' ? 'status-wait' : 'status-other');
+    return '<span class="status ' + cls + '">' + esc(s) + '</span>';
+  }
+  function viewItem(it) {
+    var dining = !!DINING[it.category];
+    return {
+      date: normalizeDate(it.date) || clean(it.date),
+      category: it.category,
+      payee: clean(it.payee),
+      amount: parseAmount(it.amount),
+      payment: it.payment || 'advance',
+      invoice: normalizeInvoice(it.invoice) || clean(it.invoice),
+      note: clean(it.note),
+      dining: dining,
+      attendees: dining ? clean(it.attendees) : '',
+      headcount: dining ? parseHeadcount(it.headcount) : null
+    };
+  }
+  function itemsTable(items, full, total) {
+    var cols = full ? 6 : 5;
+    var head = full
+      ? '<tr><th scope="col" class="c-no">No.</th><th scope="col">利用日</th><th scope="col">経費区分／支払先</th><th scope="col">支払方法／登録番号</th><th scope="col">摘要</th><th scope="col" class="num">金額</th></tr>'
+      : '<tr><th scope="col" class="c-no">No.</th><th scope="col">利用日</th><th scope="col">経費区分</th><th scope="col">支払先</th><th scope="col" class="num">金額</th></tr>';
+    var body = items.map(function (it, i) {
+      var amount = it.amount === null ? '―' : yen(it.amount);
+      var row = full
+        ? '<td class="c-no">' + (i + 1) + '</td><td class="nowrap">' + esc(it.date) + '</td>' +
+          '<td>' + esc(categoryLabel(it.category)) + '<span class="sub">' + esc(it.payee) + '</span></td>' +
+          '<td>' + esc(paymentLabel(it.payment)) + '<span class="sub mono">' + (it.invoice ? esc(it.invoice) : '登録番号なし') + '</span></td>' +
+          '<td>' + (it.note ? esc(it.note) : '―') + '</td><td class="num">' + amount + '</td>'
+        : '<td class="c-no">' + (i + 1) + '</td><td class="nowrap">' + esc(it.date) + '</td>' +
+          '<td>' + esc(categoryLabel(it.category)) + '</td><td>' + esc(it.payee) + '</td><td class="num">' + amount + '</td>';
+      var sub = '';
+      if (it.dining) {
+        var per = (it.amount !== null && it.headcount) ? yen(Math.floor(it.amount / it.headcount)) : '―';
+        sub = '<tr class="sub-row"><td></td><td colspan="' + (cols - 1) + '"><span class="dining-info">参加者：' + esc(it.attendees || '―') +
+          '　／　人数：' + (it.headcount ? it.headcount + '名' : '―') + '　／　1人あたり ' + per + '</span></td></tr>';
+      }
+      return '<tr' + (sub ? ' class="has-sub"' : '') + '>' + row + '</tr>' + sub;
+    }).join('');
+    return '<div class="table-scroll"><table class="data"><thead>' + head + '</thead><tbody>' + body + '</tbody>' +
+      '<tfoot><tr><td colspan="' + (cols - 1) + '" class="num">合計</td><td class="num">' + yen(total) + '</td></tr></tfoot></table></div>';
+  }
+  function summaryGrid(a) {
+    return '<dl class="summary-grid">' +
+      '<div><dt>申請番号</dt><dd class="mono" id="application-id">' + esc(a.id) + '</dd></div>' +
+      '<div><dt>件名</dt><dd>' + esc(a.title) + '</dd></div>' +
+      '<div><dt>合計金額</dt><dd class="mono" id="application-total">' + yen(a.total) + '</dd></div>' +
+      '<div><dt>ステータス</dt><dd id="application-status">' + statusBadge(a.status) + '</dd></div>' +
+      '</dl>';
+  }
+  function infoDl(rows) {
+    return '<dl class="dl-grid">' + rows.map(function (r) {
+      return '<dt>' + esc(r[0]) + '</dt><dd>' + (isBlank(r[1]) ? '―' : esc(r[1])) + '</dd>';
+    }).join('') + '</dl>';
+  }
+  function notFound() {
+    return pageHead('申請が見つかりません', [{ label: '申請一覧', href: '#/list' }, { label: '申請が見つかりません' }]) +
+      '<section class="card"><p class="empty">指定された申請は見つかりませんでした。デモがリセットされた可能性があります。</p></section>' +
+      '<div class="detail-actions"><button type="button" class="btn btn-primary" id="btn-to-list" name="btn-to-list">申請一覧へ戻る</button></div>';
+  }
+
+  /* ---------- views ---------- */
+  function viewList() {
+    var apps = state.data.applications.slice().sort(function (a, b) {
+      if (a.appliedAt !== b.appliedAt) { return a.appliedAt < b.appliedAt ? 1 : -1; }
+      return (b.createdAt || 0) - (a.createdAt || 0);
+    });
+    var d = state.data.draft;
+    var notice = draftHasContent(d)
+      ? '<div class="notice">' + ICON_INFO + '<span>入力途中の下書きがあります（明細 ' + d.items.length + '件）。「＋ 新規申請（出張・立替経費）」から続きを入力できます。</span></div>'
+      : '';
+    var rows = apps.map(function (a) {
+      return '<tr class="row-link" data-href="/detail/' + esc(a.id) + '">' +
+        '<td><a class="mono" href="#/detail/' + esc(a.id) + '">' + esc(a.id) + '</a></td>' +
+        '<td>' + esc(a.title) + '</td>' +
+        '<td class="nowrap">' + esc(a.appliedAt) + '</td>' +
+        '<td class="num">' + yen(a.total) + '</td>' +
+        '<td>' + statusBadge(a.status) + '</td></tr>';
+    }).join('');
+    var table = apps.length
+      ? '<div class="table-scroll"><table class="data" id="application-table"><caption class="sr-only">申請一覧</caption><thead><tr>' +
+        '<th scope="col">申請番号</th><th scope="col">件名</th><th scope="col">申請日</th><th scope="col" class="num">合計金額</th><th scope="col">ステータス</th>' +
+        '</tr></thead><tbody>' + rows + '</tbody></table></div>'
+      : '<p class="empty">申請はまだありません。</p>';
+    return pageHead('申請一覧', null,
+      '<button type="button" class="btn btn-primary btn-lg" id="btn-new" name="btn-new">＋ 新規申請（出張・立替経費）</button>',
+      '出張・立替経費の申請状況を確認できます。') +
+      notice + '<section class="card table-card" aria-label="申請一覧">' + table + '</section>';
+  }
+
+  function labelHtml(id, text, required) {
+    return '<label for="' + id + '">' + esc(text) + (required ? '<span class="req">必須</span>' : '') + '</label>';
+  }
+  function errorHtml(id) { return '<p class="field-error" id="' + id + '-error"></p>'; }
+  function textField(o) {
+    return '<div class="field' + (o.cls ? ' ' + o.cls : '') + '">' + labelHtml(o.id, o.label, o.required) +
+      '<input type="text" id="' + o.id + '" name="' + o.id + '" value="' + esc(o.value) + '"' +
+      (o.placeholder ? ' placeholder="' + esc(o.placeholder) + '"' : '') +
+      (o.inputmode ? ' inputmode="' + o.inputmode + '"' : '') +
+      (o.required ? ' required aria-required="true"' : '') +
+      ' aria-describedby="' + o.id + '-error" autocomplete="off" spellcheck="false">' + errorHtml(o.id) + '</div>';
+  }
+  function textareaField(o) {
+    return '<div class="field' + (o.cls ? ' ' + o.cls : '') + '">' + labelHtml(o.id, o.label, o.required) +
+      '<textarea id="' + o.id + '" name="' + o.id + '" rows="' + (o.rows || 2) + '"' +
+      (o.placeholder ? ' placeholder="' + esc(o.placeholder) + '"' : '') +
+      (o.required ? ' required aria-required="true"' : '') +
+      ' aria-describedby="' + o.id + '-error" spellcheck="false">' + esc(o.value) + '</textarea>' + errorHtml(o.id) + '</div>';
+  }
+  function selectField(o) {
+    var opts = o.options.map(function (op) {
+      return '<option value="' + esc(op.value) + '"' + (op.value === o.value ? ' selected' : '') + '>' + esc(op.label) + '</option>';
+    }).join('');
+    return '<div class="field' + (o.cls ? ' ' + o.cls : '') + '">' + labelHtml(o.id, o.label, o.required) +
+      '<select id="' + o.id + '" name="' + o.id + '"' + (o.required ? ' required aria-required="true"' : '') +
+      ' aria-describedby="' + o.id + '-error">' + opts + '</select>' + errorHtml(o.id) + '</div>';
+  }
+  function numberField(o) {
+    return '<div class="field' + (o.cls ? ' ' + o.cls : '') + '">' + labelHtml(o.id, o.label, o.required) +
+      '<input type="number" id="' + o.id + '" name="' + o.id + '" value="' + esc(o.value) + '" min="1" max="999" step="1" inputmode="numeric"' +
+      (o.required ? ' required aria-required="true"' : '') +
+      ' aria-describedby="' + o.id + '-error" autocomplete="off">' + errorHtml(o.id) + '</div>';
+  }
+
+  function itemCard(it, i) {
+    var n = i + 1, p = 'item-' + n + '-';
+    var dining = !!DINING[it.category];
+    return '<article class="item-card" id="item-' + n + '" aria-labelledby="' + p + 'heading">' +
+      '<div class="item-gutter">' +
+        '<h3 class="item-no" id="' + p + 'heading"><span class="sr-only">明細</span>' + n + '</h3>' +
+        '<button type="button" class="btn-del" id="' + p + 'delete" name="' + p + 'delete" aria-label="明細' + n + 'を削除">削除</button>' +
+      '</div>' +
+      '<div class="item-body">' +
+        '<div class="row-a">' +
+          textField({ id: p + 'date', label: '利用日', value: it.date, required: true, placeholder: 'YYYY/MM/DD', inputmode: 'numeric' }) +
+          selectField({ id: p + 'category', label: '経費区分', value: it.category, options: CATEGORIES, required: true }) +
+          textField({ id: p + 'payee', label: '支払先', value: it.payee, required: true, placeholder: '例：〇〇株式会社' }) +
+          textField({ id: p + 'amount', label: '金額（税込・円）', value: it.amount, required: true, placeholder: '例：12,345', inputmode: 'numeric', cls: 'f-amount' }) +
+        '</div>' +
+        '<div class="row-b">' +
+          selectField({ id: p + 'payment', label: '支払方法', value: it.payment || 'advance', options: PAYMENTS, required: true }) +
+          textField({ id: p + 'invoice', label: '登録番号（インボイス・任意）', value: it.invoice, placeholder: 'T＋13桁' }) +
+          textField({ id: p + 'note', label: '摘要', value: it.note, placeholder: '例：区間・用途など' }) +
+        '</div>' +
+        '<div class="row-c" id="' + p + 'dining"' + (dining ? '' : ' hidden') + '>' +
+          textareaField({ id: p + 'attendees', label: '参加者（会社名・氏名）', value: it.attendees, required: true, rows: 2, placeholder: '社外・社内の参加者を会社名と氏名で入力' }) +
+          numberField({ id: p + 'headcount', label: '人数', value: it.headcount, required: true }) +
+          '<div class="field perperson"><label for="' + p + 'perperson">1人あたり</label>' +
+            '<output id="' + p + 'perperson" for="' + p + 'amount ' + p + 'headcount">' + perPersonText(it) + '</output></div>' +
+        '</div>' +
+      '</div>' +
+    '</article>';
+  }
+  function policyCard() {
+    return '<section class="card policy-card" aria-labelledby="policy-title">' +
+      '<h2 class="policy-title" id="policy-title">' + ICON_POLICY + '経費規程（抜粋）</h2>' +
+      '<ol class="policy-list">' +
+        '<li><span class="pno" aria-hidden="true">①</span><span>新幹線・特急は「旅費交通費（新幹線・特急）」、タクシー・バスは「旅費交通費（タクシー・バス）」。</span></li>' +
+        '<li><span class="pno" aria-hidden="true">②</span><span>社外の方との飲食は、1人あたり10,000円以下なら「会議費」、10,000円を超える場合は「交際費」。</span></li>' +
+        '<li><span class="pno" aria-hidden="true">③</span><span>会議費・交際費は、参加者（会社名・氏名）と人数の入力が必須。</span></li>' +
+        '<li><span class="pno" aria-hidden="true">④</span><span>領収書に登録番号（T＋13桁）があれば入力する。</span></li>' +
+      '</ol>' +
+      '<p class="policy-note">Contoso株式会社の架空の規程です</p>' +
+    '</section>';
+  }
+  function viewNew() {
+    var d = ensureDraft();
+    var info = '<section class="card form-card" aria-labelledby="sec-info-title">' +
+      '<h2 class="card-title" id="sec-info-title">申請情報</h2>' +
+      '<div class="info-grid">' +
+        textField({ id: 'title', label: '件名', value: d.title, required: true, placeholder: '例：〇〇支社 説明会（日帰り出張）', cls: 'f-title' }) +
+        textField({ id: 'trip-date', label: '出張日', value: d.tripDate, required: true, placeholder: 'YYYY/MM/DD', inputmode: 'numeric', cls: 'f-tripdate' }) +
+        textField({ id: 'destination', label: '出張先', value: d.destination, placeholder: '例：〇〇支社', cls: 'f-dest' }) +
+        textareaField({ id: 'purpose', label: '目的', value: d.purpose, required: true, rows: 3, placeholder: '出張の目的を入力', cls: 'f-purpose' }) +
+      '</div></section>';
+    var items = '<section aria-labelledby="sec-items-title">' +
+      '<div class="section-head"><h2 class="section-title" id="sec-items-title">明細 <span class="count-pill"><span id="item-count">' + d.items.length + '</span>件</span></h2>' +
+      '<button type="button" class="btn btn-secondary btn-sm" id="btn-add-item" name="btn-add-item">＋ 明細を追加</button></div>' +
+      '<div class="items" id="items">' + d.items.map(itemCard).join('') + '</div></section>';
+    var side = '<aside class="side-col" aria-label="合計と経費規程">' +
+      '<section class="card total-card" aria-labelledby="total-label">' +
+        '<p class="total-label" id="total-label">合計金額（税込）</p>' +
+        '<p class="total-amount"><output id="total" aria-live="polite">¥0</output></p>' +
+        '<p class="total-meta" id="autosave-status">入力内容は自動で保存されます</p>' +
+        '<div class="actions-col">' +
+          '<button type="button" class="btn btn-primary btn-lg btn-block" id="btn-to-confirm" name="btn-to-confirm">確認画面へ進む</button>' +
+          '<button type="button" class="btn btn-secondary btn-block" id="btn-save-draft" name="btn-save-draft">下書き保存</button>' +
+        '</div>' +
+      '</section>' + policyCard() + '</aside>';
+    return pageHead('新規申請（出張・立替経費）', [{ label: '申請一覧', href: '#/list' }, { label: '新規申請' }]) +
+      '<div class="layout">' +
+        '<form id="expense-form" class="main-col" novalidate autocomplete="off" aria-labelledby="page-title">' +
+          '<div id="error-summary" class="error-summary" role="alert" tabindex="-1" hidden></div>' +
+          info + items +
+        '</form>' + side +
+      '</div>';
+  }
+  function viewConfirm() {
+    var d = ensureDraft();
+    var items = d.items.map(viewItem);
+    var total = items.reduce(function (s, it) { return s + (it.amount || 0); }, 0);
+    return pageHead('申請内容の確認', [{ label: '申請一覧', href: '#/list' }, { label: '新規申請', href: '#/new' }, { label: '確認' }], '',
+      '内容を確認し、問題がなければ「申請する」を押してください。') +
+      '<div class="layout"><div class="main-col">' +
+        '<section class="card form-card" aria-labelledby="cf-info"><h2 class="card-title" id="cf-info">申請情報</h2>' +
+          infoDl([['件名', d.title], ['出張日', normalizeDate(d.tripDate) || d.tripDate], ['出張先', d.destination], ['目的', d.purpose]]) +
+        '</section>' +
+        '<section class="card table-card mt" aria-labelledby="cf-items"><div class="table-card-head"><h2 class="card-title" id="cf-items">明細 <span class="count-pill">' + items.length + '件</span></h2></div>' +
+          itemsTable(items, true, total) +
+        '</section>' +
+      '</div>' +
+      '<aside class="side-col" aria-label="申請の操作"><section class="card total-card" aria-labelledby="cf-total-label">' +
+        '<p class="total-label" id="cf-total-label">合計金額（税込）</p>' +
+        '<p class="total-amount" id="confirm-total">' + yen(total) + '</p>' +
+        '<p class="total-meta">明細 ' + items.length + '件</p>' +
+        '<p class="confirm-note">申請すると上長に承認依頼が送られます（体験会デモのため実際には送信されません）</p>' +
+        '<div class="actions-col">' +
+          '<button type="button" class="btn btn-primary btn-lg btn-block" id="btn-submit" name="btn-submit">申請する</button>' +
+          '<button type="button" class="btn btn-secondary btn-block" id="btn-back-edit" name="btn-back-edit">修正する</button>' +
+        '</div>' +
+      '</section></aside></div>';
+  }
+  function viewDone(id) {
+    var a = findApp(id);
+    if (!a) { return notFound(); }
+    var items = (a.items || []).map(viewItem);
+    return '<div class="done-wrap"><section class="card done-card" aria-labelledby="page-title">' +
+      '<div class="done-head"><div class="done-icon">' + ICON_CHECK + '</div>' +
+        '<h1 id="page-title" tabindex="-1">申請が完了しました</h1>' +
+        '<p class="done-lead">上長の承認をお待ちください（体験会デモのため、承認依頼は実際には送信されません）。</p></div>' +
+      summaryGrid(a) +
+      '<h2 class="card-title">明細 <span class="count-pill">' + items.length + '件</span></h2>' +
+      '<div class="table-frame">' + itemsTable(items, false, a.total) + '</div>' +
+      '<div class="done-actions"><button type="button" class="btn btn-primary btn-lg" id="btn-to-list" name="btn-to-list">申請一覧へ戻る</button></div>' +
+    '</section></div>';
+  }
+  function viewDetail(id) {
+    var a = findApp(id);
+    if (!a) { return notFound(); }
+    var items = (a.items || []).map(viewItem);
+    return pageHead('申請詳細', [{ label: '申請一覧', href: '#/list' }, { label: a.id }]) +
+      '<section class="card form-card">' + summaryGrid(a).replace('class="summary-grid"', 'class="summary-grid" style="margin-top:4px"') +
+        infoDl([['出張日', a.tripDate], ['出張先', a.destination], ['目的', a.purpose], ['申請日', a.appliedAt]]) +
+      '</section>' +
+      '<section class="card table-card mt" aria-labelledby="dt-items"><div class="table-card-head"><h2 class="card-title" id="dt-items">明細 <span class="count-pill">' + items.length + '件</span></h2></div>' +
+        itemsTable(items, true, a.total) +
+      '</section>' +
+      '<div class="detail-actions"><button type="button" class="btn btn-primary" id="btn-to-list" name="btn-to-list">申請一覧へ戻る</button></div>';
+  }
+
+  /* ---------- form behaviour ---------- */
+  function captureForm() {
+    if (!state.data || !byId('expense-form')) { return; }
+    var d = ensureDraft();
+    Object.keys(TOP_FIELDS).forEach(function (id) { var el = byId(id); if (el) { d[TOP_FIELDS[id]] = el.value; } });
+    d.items.forEach(function (it, i) {
+      ITEM_KEYS.forEach(function (k) { var el = byId('item-' + (i + 1) + '-' + k); if (el) { it[k] = el.value; } });
+    });
+    persist();
+  }
+  function rerenderForm() {
+    view.innerHTML = viewNew();
+    afterFormRender();
+  }
+  function afterFormRender() {
+    ensureDraft().items.forEach(function (it, i) {
+      var c = byId('item-' + (i + 1) + '-category'), p = byId('item-' + (i + 1) + '-payment');
+      if (c && c.value !== it.category) { c.value = it.category; }
+      if (p && p.value !== (it.payment || 'advance')) { p.value = it.payment || 'advance'; }
+    });
+    refreshComputed();
+    state.summaryKey = '';
+    if (state.showErrors) { applyErrors(validateDraft(ensureDraft()), false); }
+  }
+  function refreshComputed() {
+    var d = state.data.draft;
+    if (!d) { return; }
+    var total = 0;
+    d.items.forEach(function (it, i) {
+      var a = parseAmount(it.amount);
+      if (a !== null) { total += a; }
+      var o = byId('item-' + (i + 1) + '-perperson');
+      if (o) { o.textContent = perPersonText(it); }
+    });
+    var t = byId('total');
+    if (t) { t.textContent = yen(total); }
+    var c = byId('item-count');
+    if (c) { c.textContent = String(d.items.length); }
+  }
+  function autosave(manual) {
+    var d = ensureDraft();
+    d.savedAt = new Date().toISOString();
+    persist();
+    var s = byId('autosave-status');
+    if (s) { s.textContent = (manual ? '下書きを保存しました（' : '自動保存しました（') + timeStr() + '）'; }
+  }
+  function syncField(t) {
+    var d = ensureDraft();
+    if (Object.prototype.hasOwnProperty.call(TOP_FIELDS, t.id)) { d[TOP_FIELDS[t.id]] = t.value; return; }
+    var m = /^item-(\d+)-([a-z]+)$/.exec(t.id);
+    if (m && ITEM_KEYS.indexOf(m[2]) >= 0) {
+      var it = d.items[parseInt(m[1], 10) - 1];
+      if (it) { it[m[2]] = t.value; }
+    }
+  }
+  function normalizeControl(t) {
+    var v = t.value, n = null;
+    if (t.id === 'trip-date' || /^item-\d+-date$/.test(t.id)) { n = normalizeDate(v); }
+    else if (/^item-\d+-amount$/.test(t.id)) { var a = parseAmount(v); n = a === null ? null : comma(a); }
+    else if (/^item-\d+-invoice$/.test(t.id)) { n = normalizeInvoice(v); }
+    if (n !== null && n !== v) { t.value = n; }
+  }
+  function toggleDining(n) {
+    var it = ensureDraft().items[n - 1], box = byId('item-' + n + '-dining');
+    if (it && box) { box.hidden = !DINING[it.category]; }
+  }
+  function onFieldUpdated(t) {
+    var m = /^item-(\d+)-category$/.exec(t.id);
+    if (m) { toggleDining(parseInt(m[1], 10)); }
+    refreshComputed();
+    autosave(false);
+    if (state.showErrors) { applyErrors(validateDraft(ensureDraft()), false); }
+  }
+  function isFormControl(t) {
+    return !!(t && t.id && /^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName) && t.closest && t.closest('#expense-form'));
+  }
+  function applyErrors(errs, focusSummary) {
+    var form = byId('expense-form'), box = byId('error-summary');
+    if (!form || !box) { return; }
+    each(form.querySelectorAll('.field-error'), function (p) { p.textContent = ''; });
+    each(form.querySelectorAll('.is-invalid'), function (el) { el.classList.remove('is-invalid'); el.removeAttribute('aria-invalid'); });
+    errs.forEach(function (er) {
+      var el = byId(er.id), p = byId(er.id + '-error');
+      if (p && !p.textContent) { p.textContent = er.message; }
+      if (el) { el.classList.add('is-invalid'); el.setAttribute('aria-invalid', 'true'); }
+    });
+    var key = errs.map(function (er) { return er.id + ':' + er.message; }).join('|');
+    if (key !== state.summaryKey) {
+      state.summaryKey = key;
+      if (!errs.length) {
+        box.hidden = true;
+        box.innerHTML = '';
+      } else {
+        box.innerHTML = '<p class="es-title">' + ICON_ALERT + '<span>入力内容を確認してください（' + errs.length + '件）</span></p>' +
+          '<ul class="es-list">' + errs.map(function (er) {
+            return '<li><button type="button" class="es-link" id="err-link-' + esc(er.id) + '" name="err-link-' + esc(er.id) + '" data-focus="' + esc(er.id) + '">' +
+              esc(er.where + '：' + er.message) + '</button></li>';
+          }).join('') + '</ul>';
+        box.hidden = false;
+      }
+    }
+    if (focusSummary && errs.length) {
+      box.scrollIntoView({ block: 'start' });
+      focusEl(box);
+    }
+  }
+  function focusField(id) {
+    var el = byId(id);
+    if (!el) { return; }
+    el.scrollIntoView({ block: 'center' });
+    focusEl(el);
+  }
+  function addItem() {
+    captureForm();
+    var d = ensureDraft();
+    d.items.push(emptyItem());
+    autosave(false);
+    rerenderForm();
+    var n = d.items.length, card = byId('item-' + n);
+    if (card) { card.scrollIntoView({ block: 'nearest' }); }
+    focusEl(byId('item-' + n + '-date'));
+    toast('明細' + n + 'を追加しました');
+  }
+  function deleteItem(n) {
+    captureForm();
+    var d = ensureDraft();
+    if (n < 1 || n > d.items.length) { return; }
+    if (d.items.length === 1) {
+      d.items[0] = emptyItem();
+      autosave(false);
+      rerenderForm();
+      focusEl(byId('item-1-date'));
+      toast('明細1の入力内容を消去しました（明細は1件以上必要です）');
+      return;
+    }
+    d.items.splice(n - 1, 1);
+    autosave(false);
+    rerenderForm();
+    focusEl(byId('btn-add-item'));
+    toast('明細' + n + 'を削除しました' + (n <= d.items.length ? '（以降の明細番号が1つずつ繰り上がりました）' : ''));
+  }
+  function toConfirm() {
+    var form = byId('expense-form');
+    if (form) { each(form.querySelectorAll('input, select, textarea'), normalizeControl); }
+    captureForm();
+    var errs = validateDraft(ensureDraft());
+    if (errs.length) {
+      state.showErrors = true;
+      state.summaryKey = '';
+      applyErrors(errs, true);
+      toast('入力内容に誤りがあります（' + errs.length + '件）');
+      return;
+    }
+    state.showErrors = false;
+    autosave(false);
+    go('/confirm');
+  }
+  function generateId() {
+    var y = new Date().getFullYear(), used = {}, id, i;
+    state.data.applications.forEach(function (a) { used[a.id] = true; });
+    for (i = 0; i < 500; i++) {
+      id = 'EXP-' + y + '-' + pad(1 + Math.floor(Math.random() * 9999), 4);
+      if (!used[id]) { return id; }
+    }
+    for (i = 1; i <= 9999; i++) {
+      id = 'EXP-' + y + '-' + pad(i, 4);
+      if (!used[id]) { return id; }
+    }
+    return 'EXP-' + y + '-' + String(Date.now()).slice(-4);
+  }
+  function buildApplication(d) {
+    var items = d.items.map(function (it) {
+      var v = viewItem(it);
+      return {
+        date: v.date, category: v.category, payee: v.payee, amount: v.amount, payment: v.payment,
+        invoice: normalizeInvoice(it.invoice) || '', note: v.note,
+        attendees: v.dining ? v.attendees : '', headcount: v.dining ? v.headcount : ''
+      };
+    });
+    var total = items.reduce(function (s, it) { return s + it.amount; }, 0);
+    return {
+      id: generateId(), title: clean(d.title), tripDate: normalizeDate(d.tripDate), destination: clean(d.destination), purpose: clean(d.purpose),
+      items: items, total: total, status: '上長承認待ち', appliedAt: todayStr(), createdAt: Date.now()
+    };
+  }
+  function submitApplication(btn) {
+    var d = state.data.draft;
+    if (!d) { go('/list'); return; }
+    if (validateDraft(d).length) { state.showErrors = true; go('/new'); return; }
+    btn.disabled = true;
+    var app = buildApplication(d);
+    state.data.applications.unshift(app);
+    state.data.draft = null;
+    state.showErrors = false;
+    persist();
+    go('/done/' + app.id);
+    toast('申請が完了しました（申請番号 ' + app.id + '）');
+  }
+
+  /* ---------- reset panel ---------- */
+  function openResetPanel() {
+    var p = byId('reset-panel'), b = byId('btn-reset');
+    p.hidden = false;
+    b.setAttribute('aria-expanded', 'true');
+    p.scrollIntoView({ block: 'nearest' });
+    focusEl(byId('reset-panel-title'));
+  }
+  function closeResetPanel(returnFocus) {
+    var p = byId('reset-panel'), b = byId('btn-reset');
+    if (!p || !b) { return; }
+    p.hidden = true;
+    b.setAttribute('aria-expanded', 'false');
+    if (returnFocus) { focusEl(b); }
+  }
+  function doReset() {
+    resetDemo();
+    closeResetPanel(false);
+    state.lastPath = null;
+    go('/list');
+    toast('デモを初期状態に戻しました');
+  }
+
+  /* ---------- toast ---------- */
+  function toast(msg) {
+    var region = byId('toast-region');
+    if (!region) { return; }
+    var el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg;
+    region.appendChild(el);
+    while (region.children.length > 3) { region.removeChild(region.firstChild); }
+    setTimeout(function () { el.classList.add('is-hiding'); }, 3600);
+    setTimeout(function () { if (el.parentNode) { el.parentNode.removeChild(el); } }, 4000);
+  }
+
+  /* ---------- events ---------- */
+  view.addEventListener('input', function (e) {
+    if (!isFormControl(e.target)) { return; }
+    syncField(e.target);
+    onFieldUpdated(e.target);
+  });
+  view.addEventListener('change', function (e) {
+    if (!isFormControl(e.target)) { return; }
+    normalizeControl(e.target);
+    syncField(e.target);
+    onFieldUpdated(e.target);
+  });
+  view.addEventListener('submit', function (e) { e.preventDefault(); });
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t || !t.closest) { return; }
+    var btn = t.closest('button');
+    if (btn) {
+      if (btn.disabled) { return; }
+      var id = btn.id || '', m;
+      if (id === 'btn-new') { go('/new'); }
+      else if (id === 'btn-add-item') { addItem(); }
+      else if ((m = /^item-(\d+)-delete$/.exec(id))) { deleteItem(parseInt(m[1], 10)); }
+      else if (id === 'btn-save-draft') { captureForm(); autosave(true); toast('下書きを保存しました'); }
+      else if (id === 'btn-to-confirm') { toConfirm(); }
+      else if (id === 'btn-back-edit') { go('/new'); }
+      else if (id === 'btn-submit') { submitApplication(btn); }
+      else if (id === 'btn-to-list') { go('/list'); }
+      else if (id === 'btn-reset') { if (byId('reset-panel').hidden) { openResetPanel(); } else { closeResetPanel(true); } }
+      else if (id === 'btn-reset-confirm') { doReset(); }
+      else if (id === 'btn-reset-cancel') { closeResetPanel(true); }
+      else if (btn.getAttribute('data-focus')) { focusField(btn.getAttribute('data-focus')); }
+      return;
+    }
+    var row = t.closest('tr[data-href]');
+    if (row && !t.closest('a')) { go(row.getAttribute('data-href')); }
+  });
+  window.addEventListener('hashchange', render);
+  window.addEventListener('storage', function (e) {
+    if (e.key !== STORAGE_KEY || byId('expense-form')) { return; }
+    loadData();
+    render();
+  });
+
+  loadData();
+  render();
+})();
+</script>
+</body>
+</html>
